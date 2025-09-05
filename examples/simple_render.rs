@@ -65,6 +65,38 @@ fn main() {
         "Variants for 'users.name': {:?}",
         renderer.list_field_variants("users", "name")
     );
+    // ADD: Test mock data functionality
+    println!("\n--- Mock Data Demo ---");
+
+    // Get all mock records
+    let mock_records = schema_registry.get_mock_data("users");
+    println!("Mock data count: {}", mock_records.len());
+
+    // Render each mock record
+    for (i, record) in mock_records.iter().enumerate() {
+        println!("\nMock User {}:", i + 1);
+        let rendered = renderer.render_record("users", "card", record);
+        for (field, html) in &rendered {
+            println!("  {}: {}", field, html);
+        }
+    }
+
+    // Get specific record by ID
+    if let Some(record) = schema_registry.get_mock_record("users", "2") {
+        println!("\nSpecific user (ID=2):");
+        println!(
+            "Name: {}",
+            record.get("name").unwrap_or(&"Unknown".to_string())
+        );
+        println!(
+            "Email: {}",
+            record.get("email").unwrap_or(&"Unknown".to_string())
+        );
+    }
+
+    // Get limited records
+    let limited = schema_registry.get_mock_records("users", Some(2));
+    println!("\nLimited to 2 records: {} found", limited.len());
 
     println!("\n=== Demo Complete ===");
 }
