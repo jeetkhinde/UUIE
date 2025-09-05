@@ -1,0 +1,82 @@
+# =====================================
+# USER SCHEMA CONFIGURATION
+# =====================================
+# This file defines how user fields render in different contexts.
+#
+# INHERITANCE RULES:
+# 1. If variant not defined → uses model default (see [users.defaults])
+# 2. If not in model defaults → falls back to theme default (e.g., themes.light.h1)
+# 3. "override" replaces theme CSS classes
+# 4. "extend" appends new CSS to theme defaults
+# 5. "attrs" adds HTML attributes
+#
+# USAGE:
+# render("users", "name", "card", "John Doe")
+# → <h2 class="text-xl font-semibold">John Doe</h2>
+
+# =====================================
+# VARIANTS
+# =====================================
+[users.variants]
+
+# --- Name field ---
+[users.variants.name]
+h1 = { base = "h1", override = "text-2xl font-bold" }                  # Headline, big bold
+h2 = { base = "h2", override = "text-xl font-semibold" }               # Subheadline
+display = { base = "h1", override = "text-2xl font-bold text-center" } # Centered display
+highlight = { base = "h2", extend = "text-red-600 underline" }         # Theme + extra highlight
+
+# --- Email field ---
+[users.variants.email]
+link = { base = "a", attrs = { href = "mailto:{value}" } }                # Clickable mailto link
+input = { base = "input", attrs = { type = "email", value = "{value}" } } # Editable input field
+
+# --- Avatar field ---
+[users.variants.avatar_url]
+large = { base = "img", override = "w-12 h-12 rounded-full", attrs = { alt = "{name}", src = "{value}" } }
+small = { base = "img", override = "w-8 h-8 rounded-full", attrs = { alt = "{name}", src = "{value}" } }
+fallback = { base = "img", override = "w-10 h-10 rounded", attrs = { src = "{value or '/default.png'}", alt = "{name or 'User'}" } }
+
+# --- Created_at field ---
+[users.variants.created_at]
+time = { base = "time" }                                     # Inherit theme <time>
+full = { base = "span", override = "text-sm text-gray-500" } # Custom muted style
+
+# =====================================
+# DEFAULTS (per-model fallback)
+# =====================================
+[users.defaults]
+name = "h1"
+email = "link"
+avatar_url = "small"
+created_at = "time"
+
+# =====================================
+# CONTEXTS (with inheritance)
+# =====================================
+[users.contexts]
+
+# --- Card component ---
+[users.contexts.card]
+name = "h2"
+email = "link"
+avatar_url = "large"
+created_at = "time"
+
+# --- List / table row (inherits card, overrides only needed fields) ---
+[users.contexts.list]
+inherits = "card"
+avatar_url = "small"
+created_at = "full"
+
+# =====================================
+# EXAMPLES
+# =====================================
+# render("users", "name", "card", "John Doe")
+# → <h2 class="text-xl font-semibold">John Doe</h2>
+#
+# render("users", "email", "card", "john@doe.com")
+# → <a href="mailto:john@doe.com">john@doe.com</a>
+#
+# render("users", "created_at", "list", "2024-01-01")
+# → <span class="text-sm text-gray-500">2024-01-01</span>
