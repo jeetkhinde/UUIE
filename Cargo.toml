@@ -21,7 +21,7 @@ dotenv = "0.15"
 axum = "0.7"
 tower = "0.4"
 tower-http = { version = "0.5", features = ["cors"] }
-axum-test = "0.15"
+axum-test = "15.7"
 
 # Example binaries
 [[example]]
