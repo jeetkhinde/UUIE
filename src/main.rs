@@ -1,29 +1,30 @@
 // Main application entry point for testing and CLI usage
+// src/main.rs
 use dotenv::dotenv;
-use schema_ui_system::{registry, render};
+use schema_ui_system::{component_registry, start_server};
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
-    // Load environment variables from .env file
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Load environment variables
     dotenv().ok();
 
-    // Initialize the schema registry (loads all themes and table schemas)
-    let registry = registry();
+    // Initialize registries (this loads all schemas and components)
+    let _component_registry = component_registry();
 
-    // Test rendering examples
-    println!("=== Testing Schema Rendering ===");
+    println!("=== Schema UI Component System ===");
+    println!("🔧 Initialized schema registry");
+    println!(
+        "🧩 Discovered components: {:?}",
+        _component_registry.list_components()
+    );
 
-    // Test user field rendering in different contexts
-    if let Some(html) = render!("users", "name", "card", "John Doe") {
-        println!("Name in card: {}", html);
-    }
+    // Start web server
+    let port = std::env::var("PORT")
+        .unwrap_or_else(|_| "3000".to_string())
+        .parse::<u16>()
+        .unwrap_or(3000);
 
-    if let Some(html) = render!("users", "email", "list", "john@example.com") {
-        println!("Email in list: {}", html);
-    }
-
-    // Show available tables
-    println!("\nAvailable tables: {:?}", registry.list_tables());
+    start_server(port).await?;
 
     Ok(())
 }
