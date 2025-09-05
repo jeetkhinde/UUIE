@@ -1,82 +1,60 @@
-# =====================================
-# USER SCHEMA CONFIGURATION
-# =====================================
-# This file defines how user fields render in different contexts.
-#
-# INHERITANCE RULES:
-# 1. If variant not defined → uses model default (see [users.defaults])
-# 2. If not in model defaults → falls back to theme default (e.g., themes.light.h1)
-# 3. "override" replaces theme CSS classes
-# 4. "extend" appends new CSS to theme defaults
-# 5. "attrs" adds HTML attributes
-#
-# USAGE:
-# render("users", "name", "card", "John Doe")
-# → <h2 class="text-xl font-semibold">John Doe</h2>
+# schemas/users/users.toml
 
-# =====================================
-# VARIANTS
-# =====================================
-[users.variants]
+# Field variants - how each field can be rendered
+[variants.name]
+h1 = { base = "h1", override = "text-2xl font-bold" }
+h2 = { base = "h2", override = "text-xl font-semibold" }
+display = { base = "h1", override = "text-2xl font-bold text-center" }
 
-# --- Name field ---
-[users.variants.name]
-h1 = { base = "h1", override = "text-2xl font-bold" }                  # Headline, big bold
-h2 = { base = "h2", override = "text-xl font-semibold" }               # Subheadline
-display = { base = "h1", override = "text-2xl font-bold text-center" } # Centered display
-highlight = { base = "h2", extend = "text-red-600 underline" }         # Theme + extra highlight
+[variants.email]
+link = { base = "a", attrs = { href = "mailto:{value}" } }
+input = { base = "input", attrs = { type = "email", value = "{value}" } }
 
-# --- Email field ---
-[users.variants.email]
-link = { base = "a", attrs = { href = "mailto:{value}" } }                # Clickable mailto link
-input = { base = "input", attrs = { type = "email", value = "{value}" } } # Editable input field
-
-# --- Avatar field ---
-[users.variants.avatar_url]
+[variants.avatar_url]
 large = { base = "img", override = "w-12 h-12 rounded-full", attrs = { alt = "{name}", src = "{value}" } }
 small = { base = "img", override = "w-8 h-8 rounded-full", attrs = { alt = "{name}", src = "{value}" } }
-fallback = { base = "img", override = "w-10 h-10 rounded", attrs = { src = "{value or '/default.png'}", alt = "{name or 'User'}" } }
 
-# --- Created_at field ---
-[users.variants.created_at]
-time = { base = "time" }                                     # Inherit theme <time>
-full = { base = "span", override = "text-sm text-gray-500" } # Custom muted style
+[variants.created_at]
+time = { base = "time" }
+full = { base = "span", override = "text-sm text-gray-500" }
 
-# =====================================
-# DEFAULTS (per-model fallback)
-# =====================================
-[users.defaults]
+# Default variants for each field
+[defaults]
 name = "h1"
 email = "link"
 avatar_url = "small"
 created_at = "time"
 
-# =====================================
-# CONTEXTS (with inheritance)
-# =====================================
-[users.contexts]
-
-# --- Card component ---
-[users.contexts.card]
+# Contexts - which variant to use in different UI situations
+[contexts.card]
 name = "h2"
 email = "link"
 avatar_url = "large"
 created_at = "time"
 
-# --- List / table row (inherits card, overrides only needed fields) ---
-[users.contexts.list]
+[contexts.list]
 inherits = "card"
 avatar_url = "small"
 created_at = "full"
 
-# =====================================
-# EXAMPLES
-# =====================================
-# render("users", "name", "card", "John Doe")
-# → <h2 class="text-xl font-semibold">John Doe</h2>
-#
-# render("users", "email", "card", "john@doe.com")
-# → <a href="mailto:john@doe.com">john@doe.com</a>
-#
-# render("users", "created_at", "list", "2024-01-01")
-# → <span class="text-sm text-gray-500">2024-01-01</span>
+# Mock data for testing and development
+[[mock_data]]
+id = "1"
+name = "John Doe"
+email = "john@example.com"
+avatar_url = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150"
+created_at = "2024-01-15T10:30:00Z"
+
+[[mock_data]]
+id = "2"
+name = "Jane Smith"
+email = "jane.smith@example.com"
+avatar_url = "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150"
+created_at = "2024-01-14T09:15:00Z"
+
+[[mock_data]]
+id = "3"
+name = "Bob Wilson"
+email = "bob@company.com"
+avatar_url = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"
+created_at = "2024-01-13T14:22:00Z"

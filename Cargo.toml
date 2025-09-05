@@ -18,8 +18,8 @@ dotenv = "0.15"
 
 # Example binaries
 [[example]]
-name = "basic_usage"
-path = "examples/basic_usage.rs"
+name = "simple_render"
+path = "examples/simple_render.rs"
 
 [dev-dependencies]
 tokio-test = "0.4"

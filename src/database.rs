@@ -1,5 +1,5 @@
 // Database module - handles Supabase connection and SQL operations
-use sqlx::{PgPool, Row};
+use sqlx::{Column, PgPool, Row};
 use std::collections::HashMap;
 use std::env;
 
@@ -115,7 +115,11 @@ impl Database {
         let query = format!(
             "INSERT INTO {} ({}) VALUES ({}) RETURNING id",
             table,
-            fields.join(", "),
+            fields
+                .iter()
+                .map(|s| s.as_str())
+                .collect::<Vec<_>>()
+                .join(", "),
             placeholders.join(", ")
         );
 
